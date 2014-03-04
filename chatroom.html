@@ -1,0 +1,83 @@
+<html>
+<head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+<script>
+var socket = io.connect('http://chatroom.js.nodejitsu.com');
+	socket.on('connect',function(){
+	socket.emit('adduser',prompt("what is your name?"));
+	});
+	socket.on('update_chat',function(username,data)
+	{
+	$('#conversation').append('<b>'+username + ':'+'</b> '+ '&nbsp'+data.fontcolor("black") +'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'+new Date().getHours() + ":"  
+                +new Date().getMinutes()+':'+new Date().getSeconds()+ '<br>');
+	});
+	socket.on('updaterooms', function(rooms, current_room) {
+		$('#rooms').empty();
+		$.each(rooms, function(key, value) {
+			if(value == current_room){
+				$('#rooms').append('<div>' + value + '</div>');
+			}
+			else {
+				$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+			}
+		});
+		});
+		socket.on('updateusers',function(usernames,username){
+		$('#users').empty();
+		$.each(usernames, function(key, value) {
+				$('#users').append('<div>' + value + '</div>');
+		});
+		});
+		function switchRoom(room){
+		socket.emit('switchRoom', room);
+	}
+		
+		$(function(){
+		$('#datasend').click( function() {
+			var message = $('#data').val();
+			$('#data').val('');
+			socket.emit('sendchat', message);
+		});
+		$('#data').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#datasend').focus().click();
+			}
+		});
+		$('#roombutton').click(function(){
+        var name = $('#roomname').val();
+        $('#roomname').val('');
+        socket.emit('create', name)
+    });
+	$('#roomname').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#roombutton').focus().click();
+			}
+		});
+	});
+	</script>
+	<body>
+<div style="float:left;width:200px;height:800px;padding:10px;overflow:scroll-y;">
+	<b>GROUPS:</b>
+	<div id="rooms" style="color:blue"></div>
+	 <input id="roomname" style="width:100px;" />
+        <input type="button" id="roombutton" value="+" />
+		<br>
+		<br>
+		<br>
+		<b>ONLINE:</b>
+	<div id="users" style="color:green"></div>
+</div>
+<div style="float:left;width:600px;height:250px;overflow:scroll-y;padding:10px;">
+<b>MESSAGE:</b>
+<br>
+<input id="data" style="width:500px;" size="200" />
+<input type="button" id="datasend" value="send" />
+<br>
+	<div id="conversation" style="color:red" ></div>
+	<br>
+   </body>
+</html>

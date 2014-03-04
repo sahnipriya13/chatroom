@@ -1,0 +1,14 @@
+{
+  "name": "chatroom.js",
+  "subdomain": "chatroom.js",
+  "scripts": {
+    "start": "chatroom.js"
+  },
+  "version": "0.0.0-1",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "socket.io": "*"
+  }
+}
